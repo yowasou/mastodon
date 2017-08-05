@@ -1,3 +1,3 @@
-Fabricator('Web::Setting') do
+Fabricator(:web_setting, from: Web::Setting) do
 
 end
