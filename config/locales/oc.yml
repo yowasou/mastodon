@@ -31,7 +31,7 @@ oc:
     status_count_after: estatuts
     status_count_before: qu’an escrich
     user_count_after: personas
-    user_count_before: Ostal de 
+    user_count_before: Ostal de
     what_is_mastodon: Qu’es Mastodon ?
   accounts:
     follow: Sègre
@@ -415,9 +415,6 @@ oc:
       title: "%{name} vos a mencionat"
     reblog:
       title: "%{name} a partejat vòstre estatut"
-    subscribed:
-      body: Podètz ara recebre las notificacions push.
-      title: Abonament enregistrat !
   remote_follow:
     acct: Picatz vòstre utilizaire@instància que cal utilizar per sègre aqueste utilizaire
     missing_resource: URL de redireccion pas trobada
