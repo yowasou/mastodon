@@ -14,7 +14,6 @@ class Pubsubhubbub::DistributionWorker
     @subscriptions = active_subscriptions.to_a
 
     distribute_public!(stream_entries.reject(&:hidden?))
-    distribute_hidden!(stream_entries.select(&:hidden?))
   end
 
   private
@@ -24,27 +23,12 @@ class Pubsubhubbub::DistributionWorker
 
     @payload = OStatus::AtomSerializer.render(OStatus::AtomSerializer.new.feed(@account, stream_entries))
 
-    Pubsubhubbub::DeliveryWorker.push_bulk(@subscriptions) do |subscription|
-      [subscription.id, @payload]
-    end
-  end
-
-  def distribute_hidden!(stream_entries)
-    return if stream_entries.empty?
-
-    @payload = OStatus::AtomSerializer.render(OStatus::AtomSerializer.new.feed(@account, stream_entries))
-    @domains = @account.followers.domains
-
-    Pubsubhubbub::DeliveryWorker.push_bulk(@subscriptions.select { |s| allowed_to_receive?(s.callback_url, s.domain) }) do |subscription|
-      [subscription.id, @payload]
+    Pubsubhubbub::DeliveryWorker.push_bulk(@subscriptions) do |subscription_id|
+      [subscription_id, @payload]
     end
   end
 
   def active_subscriptions
-    Subscription.where(account: @account).active.select('id, callback_url, domain')
-  end
-
-  def allowed_to_receive?(callback_url, domain)
-    (!domain.nil? && @domains.include?(domain)) || @domains.include?(Addressable::URI.parse(callback_url).host)
+    Subscription.where(account: @account).active.pluck(:id)
   end
 end

@@ -18,18 +18,17 @@ describe Pubsubhubbub::DistributionWorker do
     it 'delivers payload to all subscriptions' do
       allow(Pubsubhubbub::DeliveryWorker).to receive(:push_bulk)
       subject.perform(status.stream_entry.id)
-      expect(Pubsubhubbub::DeliveryWorker).to have_received(:push_bulk).with([anonymous_subscription, subscription_with_follower])
+      expect(Pubsubhubbub::DeliveryWorker).to have_received(:push_bulk).with([anonymous_subscription.id, subscription_with_follower.id])
     end
   end
 
   describe 'with private status' do
     let(:status) { Fabricate(:status, account: alice, text: 'Hello', visibility: :private) }
 
-    it 'delivers payload only to subscriptions with followers' do
+    it 'does not deliver anything' do
       allow(Pubsubhubbub::DeliveryWorker).to receive(:push_bulk)
       subject.perform(status.stream_entry.id)
-      expect(Pubsubhubbub::DeliveryWorker).to have_received(:push_bulk).with([subscription_with_follower])
-      expect(Pubsubhubbub::DeliveryWorker).to_not have_received(:push_bulk).with([anonymous_subscription])
+      expect(Pubsubhubbub::DeliveryWorker).to_not have_received(:push_bulk)
     end
   end
 
