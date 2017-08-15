@@ -37,7 +37,7 @@ Rails.application.configure do
   config.x.vapid_public_key = vapid_key.public_key
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.perform_caching = false
 
@@ -73,6 +73,19 @@ Rails.application.configure do
   # use letter_opener_web, accessible at  /letter_opener.
   # Otherwise, use letter_opener, which launches a browser window to view sent mail.
   config.action_mailer.delivery_method = (ENV['HEROKU'] || ENV['VAGRANT'] || ENV['REMOTE_DEV']) ? :letter_opener_web : :letter_opener
+
+  config.action_mailer.smtp_settings = {
+    :port                 => ENV['SMTP_PORT'],
+    :address              => ENV['SMTP_SERVER'],
+    :user_name            => ENV['SMTP_LOGIN'].presence,
+    :password             => ENV['SMTP_PASSWORD'].presence,
+    :domain               => ENV['SMTP_DOMAIN'] || ENV['LOCAL_DOMAIN'],
+    :authentication       => ENV['SMTP_AUTH_METHOD'] == 'none' ? nil : ENV['SMTP_AUTH_METHOD'] || :plain,
+    :ca_file              => ENV['SMTP_CA_FILE'].presence,
+    :openssl_verify_mode  => ENV['SMTP_OPENSSL_VERIFY_MODE'],
+    :enable_starttls_auto => ENV['SMTP_ENABLE_STARTTLS_AUTO'] || true,
+    :tls                  => ENV['SMTP_TLS'].presence,
+  }
 
   config.after_initialize do
     Bullet.enable        = true
