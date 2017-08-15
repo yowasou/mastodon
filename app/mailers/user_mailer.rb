@@ -9,7 +9,9 @@ class UserMailer < Devise::Mailer
     @resource = user
     @token    = token
     @instance = Rails.configuration.x.local_domain
-
+    #p "not send mail"
+    #user.confirm
+    #user.save!
     I18n.with_locale(@resource.locale || I18n.default_locale) do
       mail to: @resource.unconfirmed_email.blank? ? @resource.email : @resource.unconfirmed_email, subject: I18n.t('devise.mailer.confirmation_instructions.subject', instance: @instance)
     end
