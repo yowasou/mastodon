@@ -1,4 +1,4 @@
-import WebSocketClient from 'websocket.js';
+//import WebSocketClient from 'websocket.js';
 
 export default function getStream(streamingAPIBaseURL, accessToken, stream, { connected, received, disconnected, reconnected }) {
 
