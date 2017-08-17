@@ -115,8 +115,7 @@
     "webpack": "^3.4.1",
     "webpack-bundle-analyzer": "^2.8.3",
     "webpack-manifest-plugin": "^1.2.1",
-    "webpack-merge": "^4.1.0",
-    "websocket.js": "^0.1.12"
+    "webpack-merge": "^4.1.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
