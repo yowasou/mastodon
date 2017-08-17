@@ -34,15 +34,20 @@ module Paperclip
       end
 
       def flush_writes #:nodoc:
-        p "-------------------------------------"
-        p "flush_writes"
-        p @queued_for_write
-        p "-------------------------------------"
+        # @instance.class.nameを確認
+        # @instance.class.methodsで対象のフィールドがあるか確認
+        # @instance.idでaccountsを検索
+        # 対象のフィールドへバイナリ化した画像を書き込む
+        #
+        #
         @queued_for_write.each do |style_name, file|
+          p "-------------------------------------"
+          p "flush_writes" + style_name.to_s
+          p "-------------------------------------"
           FileUtils.mkdir_p(File.dirname(path(style_name)))
           begin
             FileUtils.mv(file.path, path(style_name))
-          rescue SystemCallError
+          rescue SystemCallError  #エラー時はファイルをコピー
             File.open(path(style_name), "wb") do |new_file|
               while chunk = file.read(16 * 1024)
                 new_file.write(chunk)
