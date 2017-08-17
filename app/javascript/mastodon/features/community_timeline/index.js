@@ -99,6 +99,10 @@ export default class CommunityTimeline extends React.PureComponent {
 
   componentWillUnmount () {
     if (typeof this._subscription !== 'undefined') {
+      if (this._subscription == null)
+      {
+        return;
+      }
       this._subscription.close();
       this._subscription = null;
     }
