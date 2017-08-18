@@ -41,6 +41,7 @@
 #  shared_inbox_url        :string           default(""), not null
 #  followers_url           :string           default(""), not null
 #  protocol                :integer          default("ostatus"), not null
+#  image_binary_original   :binary
 #
 
 class Account < ApplicationRecord
