@@ -17,6 +17,7 @@ module Paperclip
         if (use_account_db)
           local_path = path(style_name)
           if ((local_path != nil) && !File.exists?(local_path))
+            FileUtils.mkdir_p(File.dirname(local_path))
             a = Account.find(@instance.id)
             File.binwrite(local_path, a.image_binary_original)
           end
