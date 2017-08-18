@@ -44,5 +44,5 @@ else
   Paperclip::Attachment.default_options[:storage] = :databasesystem
   Paperclip::Attachment.default_options[:path] = (ENV['PAPERCLIP_ROOT_PATH'] || ':rails_root/public/system') + '/:class/:attachment/:id_partition/:style/:filename'
   Paperclip::Attachment.default_options[:url]  = (ENV['PAPERCLIP_ROOT_URL'] || '/system') + '/:class/:attachment/:id_partition/:style/:filename'
-  Paperclip::Attachment.default_options[:url_generator] = Paperclip::UrlGenerator
+  Paperclip::Attachment.default_options[:url_generator] = Paperclip::Urlgendb
 end
