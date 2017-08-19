@@ -79,7 +79,7 @@ class Account < ApplicationRecord
   has_many :notifications, inverse_of: :account, dependent: :destroy
 
   # Media
-  # has_many :media_attachments, dependent: :destroy
+  has_many :media_attachments, dependent: :destroy
 
   # PuSH subscriptions
   has_many :subscriptions, dependent: :destroy

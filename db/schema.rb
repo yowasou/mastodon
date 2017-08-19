@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170818110732) do
+ActiveRecord::Schema.define(version: 20170819063230) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -150,6 +150,8 @@ ActiveRecord::Schema.define(version: 20170818110732) do
     t.string "shortcode"
     t.integer "type", default: 0, null: false
     t.json "file_meta"
+    t.binary "image_binary_original"
+    t.binary "image_binary_small"
     t.index ["account_id"], name: "index_media_attachments_on_account_id"
     t.index ["shortcode"], name: "index_media_attachments_on_shortcode", unique: true
     t.index ["status_id"], name: "index_media_attachments_on_status_id"

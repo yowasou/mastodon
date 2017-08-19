@@ -21,6 +21,17 @@ module Paperclip
             a = Account.find(@instance.id)
             File.binwrite(local_path, a.image_binary_original)
           end
+        elsif (use_mediaattachement_db(style_name))
+          local_path = path(style_name)
+          if ((local_path != nil) && !File.exists?(local_path))
+            FileUtils.mkdir_p(File.dirname(local_path))
+            m = MediaAttachment.find(@instance.id)
+            if (style_name == :original)
+              File.binwrite(local_path, m.image_binary_original)
+            else
+              File.binwrite(local_path, m.image_binary_small)
+            end
+          end
         end
         return s
       end
@@ -37,6 +48,14 @@ module Paperclip
             a = Account.find(@instance.id)
             a.image_binary_original = file.read
             a.save!
+          elsif (use_mediaattachement_db(style_name))
+            m = MediaAttachment.find(@instance.id)
+            if (style_name == :original)
+              m.image_binary_original = file.read
+            else
+              m.image_binary_small = file.read
+            end
+            m.save!
           end
           FileUtils.mkdir_p(File.dirname(path(style_name)))
           begin
@@ -100,6 +119,16 @@ module Paperclip
       def use_account_db
         if @instance.class.name == "Account"
           if @instance.class.column_names.include?("image_binary_original")
+            return true
+          end
+          return false
+        end
+      end
+      def use_mediaattachement_db(style_name)
+        if @instance.class.name == "MediaAttachment"
+          if (style_name == :original && @instance.class.column_names.include?("image_binary_original"))
+            return true
+          elsif (style_name == :small && @instance.class.column_names.include?("image_binary_small"))
             return true
           end
           return false
