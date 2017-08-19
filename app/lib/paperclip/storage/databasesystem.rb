@@ -14,26 +14,19 @@ module Paperclip
 
       def url(style_name)
         s = super(style_name)
-        if (use_account_db)
+        db_to_local_file(style_name)
+        return s
+      end
+
+      def db_to_local_file(style_name)
+        if (use_db(style_name))
           local_path = path(style_name)
           if ((local_path != nil) && !File.exists?(local_path))
             FileUtils.mkdir_p(File.dirname(local_path))
-            a = Account.find(@instance.id)
-            File.binwrite(local_path, a.image_binary_original)
-          end
-        elsif (use_mediaattachement_db(style_name))
-          local_path = path(style_name)
-          if ((local_path != nil) && !File.exists?(local_path))
-            FileUtils.mkdir_p(File.dirname(local_path))
-            m = MediaAttachment.find(@instance.id)
-            if (style_name == :original)
-              File.binwrite(local_path, m.image_binary_original)
-            else
-              File.binwrite(local_path, m.image_binary_small)
-            end
+            a = @instance.class.find(@instance.id)
+            File.binwrite(local_path, a.send(binary_field(style_name)))
           end
         end
-        return s
       end
 
       def flush_writes #:nodoc:
@@ -44,18 +37,10 @@ module Paperclip
         # accounts -> styleはoriginalのみ
         # media_attachments -> originalとsmall
         @queued_for_write.each do |style_name, file|
-          if (use_account_db)
-            a = Account.find(@instance.id)
-            a.image_binary_original = file.read
+          if (use_db(style_name))
+            a = @instance.class.find(@instance.id)
+            a.send(binary_field(style_name) + "=", file.read)
             a.save!
-          elsif (use_mediaattachement_db(style_name))
-            m = MediaAttachment.find(@instance.id)
-            if (style_name == :original)
-              m.image_binary_original = file.read
-            else
-              m.image_binary_small = file.read
-            end
-            m.save!
           end
           FileUtils.mkdir_p(File.dirname(path(style_name)))
           begin
@@ -104,35 +89,22 @@ module Paperclip
       end
 
       def copy_to_local_file(style, local_dest_path)
-        p "-------------------------------"
-        p "copy_to_local_file"
-        p "-------------------------------"
-        if (use_account_db)
-          a = Account.find(@instance.id)
-          File.binwrite(local_dest_path, a.image_binary_original)
-        else
-          FileUtils.cp(path(style), local_dest_path)
-        end
+        db_to_local_file(style_name)
+        FileUtils.cp(path(style), local_dest_path)
       end
 
       private
-      def use_account_db
-        if @instance.class.name == "Account"
-          if @instance.class.column_names.include?("image_binary_original")
+      def use_db(style_name)
+        if @instance.class.name == "Account" || @instance.class.name == "MediaAttachment"
+          if @instance.class.column_names.include?(binary_field(style_name))
             return true
           end
           return false
         end
       end
-      def use_mediaattachement_db(style_name)
-        if @instance.class.name == "MediaAttachment"
-          if (style_name == :original && @instance.class.column_names.include?("image_binary_original"))
-            return true
-          elsif (style_name == :small && @instance.class.column_names.include?("image_binary_small"))
-            return true
-          end
-          return false
-        end
+
+      def binary_field(style_name)
+        return "image_binary_" + style_name.to_s
       end
     end
   end
